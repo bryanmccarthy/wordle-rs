@@ -1,5 +1,6 @@
 use std::fs;
 use rand::Rng;
+use colored::*;
 
 fn main() {
 
@@ -12,4 +13,28 @@ fn main() {
     let wordle = wordle_words.lines().nth(word_line).unwrap();
 
     println!("the word to guess is {}", wordle); // TODO: remove this line
+
+    game(wordle);
+}
+
+fn game(wordle: &str) {
+    let mut guess = String::new();
+    let guess_count = 0;
+
+    println!("Wordle!");
+    loop {
+        println!("Enter your guess: ");
+
+        std::io::stdin().read_line(&mut guess)
+            .expect("Failed to read line");
+
+        // TODO: ensure the guess is a 5 letter word that is in the wordle_words.txt file
+        
+        println!("[{}] {}", guess_count, guess); // TODO: color the letters based on wordle rules
+        
+        if guess.trim() == wordle {
+            println!("The word was {}", wordle.black().on_green());
+            break;
+        }
+    }
 }
