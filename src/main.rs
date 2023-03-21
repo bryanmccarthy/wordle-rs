@@ -1,5 +1,6 @@
 use std::io;
 use std::io::{BufReader, BufRead};
+use std::io::Write;
 use std::fs;
 use std::fs::File;
 use rand::Rng;
@@ -24,8 +25,6 @@ fn get_user_guess() -> String {
     loop {
         let mut guess = String::new();
         let wordle_words_file_path = "wordle-words.txt";
-
-        println!("Enter your guess: ");
 
         let stdin = io::stdin();
         stdin.read_line(&mut guess)
@@ -64,21 +63,50 @@ fn find_word_in_file(file_path: &str, word_to_find: &str) -> io::Result<bool> {
     Ok(false)
 }
 
+fn format_guess(guess: &str, guess_count: u8, wordle: &str) {
+
+    let mut position_colors: [&str; 5] = ["-"; 5];
+
+    for (i, guess_letter) in guess.chars().enumerate() {
+        for (j, wordle_letter) in wordle.chars().enumerate() {
+            if guess_letter == wordle_letter {
+                if i == j {
+                    position_colors[i] = "g";
+                } else {
+                    if position_colors[i] != "g" {
+                        position_colors[i] = "o";
+                    }
+                }
+            } 
+        }
+    }
+
+    print!("[{}]", guess_count); 
+    io::stdout().flush().unwrap();
+
+    for (i, letter) in guess.chars().enumerate() {
+        if position_colors[i] == "g" {
+            print!("{}", letter.to_string().green());
+        } else if position_colors[i] == "o" {
+            print!("{}", letter.to_string().red());
+        } else {
+            print!("{}", letter);
+        }
+        io::stdout().flush().unwrap();
+    }
+    println!();
+}
+
 fn game(wordle: &str) {
-    let mut guess_count = 1;
-    println!("Wordle!");
+    let mut guess_count: u8 = 1;
+    println!("Wordle!\n");
     loop {
         let guess = get_user_guess();
 
-        // TODO: remove
-        for (i, letter) in wordle.chars().enumerate() {
-            println!("{} {}", i, letter);
-        }
-
-        println!("[{}] {}", guess_count, guess); // TODO: color the letters based on wordle rules
+        format_guess(guess.trim(), guess_count, wordle);
 
         if guess.trim() == wordle {
-            println!("You win! The word was {}", wordle.black().on_green());
+            println!("You win!");
             break;
         }
 
