@@ -1,22 +1,20 @@
-use std::io;
-use std::io::{BufReader, BufRead};
-use std::io::Write;
+use colored::*;
+use rand::Rng;
 use std::fs;
 use std::fs::File;
-use rand::Rng;
-use colored::*;
+use std::io;
+use std::io::Write;
+use std::io::{BufRead, BufReader};
 
 fn main() {
-
-    let wordle_words = fs::read_to_string("wordle-words.txt")
-        .expect("Unable to read file");
+    let wordle_words = fs::read_to_string("wordle-words.txt").expect("Unable to read file");
 
     // random line (12971 lines in file)
     let word_line = rand::thread_rng().gen_range(0..12971);
 
     let wordle = wordle_words.lines().nth(word_line).unwrap();
 
-    println!("the word to guess is {}", wordle); // TODO: remove this line
+    // println!("the wordle word is {}", wordle);
 
     game(wordle);
 }
@@ -27,8 +25,7 @@ fn get_user_guess() -> String {
         let wordle_words_file_path = "wordle-words.txt";
 
         let stdin = io::stdin();
-        stdin.read_line(&mut guess)
-            .expect("Failed to read line");
+        stdin.read_line(&mut guess).expect("Failed to read line");
 
         if guess.len() != 6 {
             println!("Please enter a 5 letter word");
@@ -64,7 +61,6 @@ fn find_word_in_file(file_path: &str, word_to_find: &str) -> io::Result<bool> {
 }
 
 fn format_guess(guess: &str, guess_count: u8, wordle: &str) {
-
     let mut position_colors: [&str; 5] = ["-"; 5];
 
     for (i, guess_letter) in guess.chars().enumerate() {
@@ -77,11 +73,11 @@ fn format_guess(guess: &str, guess_count: u8, wordle: &str) {
                         position_colors[i] = "o";
                     }
                 }
-            } 
+            }
         }
     }
 
-    print!("[{}]", guess_count); 
+    print!("[{}]", guess_count);
     io::stdout().flush().unwrap();
 
     for (i, letter) in guess.chars().enumerate() {
@@ -112,10 +108,9 @@ fn game(wordle: &str) {
 
         guess_count += 1;
 
-        if guess_count >  5 {
+        if guess_count > 5 {
             println!("You lose! The word was {}", wordle);
             break;
         }
     }
 }
-
